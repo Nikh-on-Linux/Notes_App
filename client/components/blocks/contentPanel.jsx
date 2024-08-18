@@ -43,7 +43,7 @@ function ContentPanel({ heading, content }) {
         {
           content.map((item) => {
             return (
-              <CardDom key={item.id} cardname={item.cardname} isTeam={item.isTeam} createdby={item.createdby} />
+              <CardDom key={item.id} cardname={item.filename} isTeam={item.isTeam} createdby={item.createdby} />
             )
           })
         }

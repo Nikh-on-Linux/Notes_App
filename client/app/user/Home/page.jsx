@@ -3,18 +3,71 @@ import React, { useRef, useState, useEffect } from 'react'
 import SearchTab from '@/components/blocks/searchTab'
 import ContentPanel from '@/components/blocks/contentPanel';
 import { LoaderCircle } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
 
 function HomePage() {
 
   const alertRef = useRef('');
   const [isOpen, setIsOpen] = useState(false);
-  const [state,setState] = useState('block');
+  const [state, setState] = useState('block');
+  const [arrayState , setArrayState] = useState([]);
+  const [teamArrayState , setTeamArrayState] = useState([]);
 
   useEffect(() => {
 
-    const fuck = (e) => {
+    const lets = (e) => {
       openBox();
     }
+
+    const fetchData = async () => {
+      
+      if (localStorage.getItem('token') !== "") {
+
+        const response = await fetch("http://localhost:3500/user/loadHome", {
+          'method': "POST",
+          "headers": {
+            'Content-Type': "application/json",
+          },
+          body: JSON.stringify({
+            "token": localStorage.getItem("token")
+          })
+        })
+
+        const serverdata = await response.json();
+
+        if (serverdata.suc) {
+
+          toast.success("User data loaded successfully");
+          console.log(serverdata);
+          setState('hidden');
+          
+          const tempArray = [];
+          const teamArray = [];
+
+          serverdata.docs.forEach((doc)=>{
+            doc.isTeam ? teamArray.push(doc): teamArray.push(doc);
+          })
+
+          console.log(teamArray);
+          setArrayState(teamArray);
+        }
+        else {
+
+          toast.error("Failed to load user data");
+
+        }
+
+      }
+      else {
+
+        toast.error("Error fetching user data");
+
+      }
+
+
+    }
+
+    fetchData();
 
     const event = new CustomEvent('destroy-loader')
 
@@ -39,127 +92,16 @@ function HomePage() {
 
   return (
     <>
+      <Toaster richColors position='bottom-right' theme='dark' />
       <div className={`w-full h-full ${state} absolute top-0 left-0 bg-transparent backdrop-blur-2xl z-50 flex flex-row items-center space-x-2 justify-center `} >
         <LoaderCircle size={20} className=' animate-spin text-secondary2-foreground' />
         <p className='text-secondary2-foreground font-medium text-xl' >Loading data</p>
       </div>
       <div className='h-full w-full py-5 px-2' >
         <SearchTab ></SearchTab>
-        <ContentPanel heading={"Your files"} content={[
-          {
-            id: 1,
-            cardname: "Filename 1",
-            createdby: "username",
-            isTeam: false,
+        <ContentPanel heading={"Your files"} content={arrayState} ></ContentPanel>
 
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: false,
-
-          },
-          {
-            id: 3,
-            cardname: "Filename 3",
-            createdby: "username",
-            isTeam: false,
-
-          }]} ></ContentPanel>
-
-        <ContentPanel heading={"Team work"} content={[
-          {
-            id: 1,
-            cardname: "Filename 1",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 2,
-            cardname: "Filename 2 ",
-            createdby: "username",
-            isTeam: true,
-
-          },
-          {
-            id: 3,
-            cardname: "Filename 3",
-            createdby: "username",
-            isTeam: true,
-
-          }]} ></ContentPanel>
+        <ContentPanel heading={"Team work"} content={teamArrayState} ></ContentPanel>
       </div>
     </>
   )

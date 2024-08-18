@@ -77,17 +77,17 @@ const createFile = (req, res) => {
 
         const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
 
-        const exf = await database.findOne({filename:req.body.file.filename});
+        const exf = await database.findOne({ filename: req.body.file.filename });
 
-        if(!exf){
+        if (!exf) {
 
           const file = await database.insertOne(req.body.file);
           res.json({ msg: `Created ${req.body.file.filename}`, suc: true });
 
         }
-        else{
+        else {
 
-          res.json({msg:`${req.body.file.filename} already exist`, suc:false});
+          res.json({ msg: `${req.body.file.filename} already exist`, suc: false });
 
         }
 
@@ -98,15 +98,16 @@ const createFile = (req, res) => {
         res.json({ msg: "Error in crearing file", suc: false });
 
       }
+
       finally {
         client.close();
         console.log("Client closed cf");
       }
 
     }
-    else{
+    else {
 
-      res.json({msg:"Invalid token, session time out",suc:false});
+      res.json({ msg: "Invalid token, session time out", suc: false });
 
     }
 
@@ -114,4 +115,128 @@ const createFile = (req, res) => {
 
 }
 
-export { fetchUser, setUser , createFile };
+
+const loadHome = async (req, res) => {
+
+  try {
+    const token = req.body.token;
+    await jwt.verify(token, process.env.SECRETE_KEY, async (err, decoded) => {
+
+      if (!err) {
+
+        const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
+
+        const files = await database.find({ type: 'file' }).toArray();
+
+        const response = await fetch('http://localhost:3500/user/userinfo', {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json",
+          },
+          body: JSON.stringify({
+            token: token
+          })
+        })
+
+        const serverResponse = await response.json();
+
+        if (serverResponse.suc) {
+
+          res.json({ msg: "Found user data", docs: files, suc: true, user: serverResponse });
+
+        }
+        else {
+
+          res.json({ msg: "Error fetching user data", suc: false });
+
+        }
+      }
+
+      else {
+        res.json({ msg: "Invalid token", suc: false });
+      }
+
+    })
+  }
+  catch (err) {
+
+    res.json({ msg: err, suc: false });
+    console.log(err);
+    client.close();
+
+  }
+
+  // finally {
+
+  //   client.close();
+  //   console.log('Client closed user5')
+
+  // }
+
+}
+
+
+const userInfo = async (req, res) => {
+
+  try {
+
+    console.log(req.body.token);
+
+    await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+      if (!error) {
+
+        const database = await makeConnection({ db: "Users", "collections": "Credentials" }).catch(console.dir);
+
+        const results = await database.findOne({ email: decoded.email }, { projection: { password: 0 } });
+
+        res.json({ msg: "Success fetching info", data: results, suc: true });
+
+      }
+
+      else {
+
+        res.json({ msg: "Invalid token 'userInfo'", suc: false });
+        console.log(error);
+
+      }
+
+
+    })
+
+
+  }
+  catch (err) {
+
+    console.log(err);
+    res.json({ msg: err, suc: false })
+
+  }
+  finally {
+
+    console.log('Client closed user 8');
+    client.close();
+
+  }
+
+}
+
+
+const jwtBreakdown = async (req, res) => {
+  await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+    if (!error) {
+
+      res.json({ msg: "Decoded", suc: true, data: decoded.id });
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNoaWxsYXhtdXNpa2FAZ21haWwuY29tIiwiaWF0IjoxNzIzMzUxOTczfQ.Sxm2SrulAEbRUIkgytPzddjnmZYXkbeRco5-wwO78s4
+
+    }
+
+    else {
+      res.json({ msg: error })
+    }
+
+  })
+}
+
+export { fetchUser, setUser, createFile, userInfo, loadHome, jwtBreakdown };
