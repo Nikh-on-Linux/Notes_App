@@ -101,7 +101,7 @@ function HomePage() {
         <SearchTab ></SearchTab>
         <ContentPanel heading={"Your files"} content={arrayState} ></ContentPanel>
 
-        <ContentPanel heading={"Team work"} content={teamArrayState} ></ContentPanel>
+        <ContentPanel heading={"Team work"} content={teamArrayState.length == 0 ? "" : teamArrayState} ></ContentPanel>
       </div>
     </>
   )

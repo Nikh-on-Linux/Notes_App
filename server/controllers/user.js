@@ -239,4 +239,248 @@ const jwtBreakdown = async (req, res) => {
   })
 }
 
-export { fetchUser, setUser, createFile, userInfo, loadHome, jwtBreakdown };
+const deleteFile = async (req, res) => {
+
+  try {
+
+    await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+      if (!error) {
+
+        try {
+          console.log(decoded);
+
+          const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
+          console.log(req.body.filename);
+          const data = await database.find({});
+
+          console.log(database.find())
+          console.log(data);
+
+          const response = await database.deleteOne({ filename: req.body.filename });
+
+          response ? res.json({ msg: `Successfully deleted file ${req.body.filename}`, suc: true }) : res.json({ msg: `Failed in deleting file ${req.body.filename}` });
+
+        }
+        catch (err) {
+
+          console.log(err);
+          res.json({ msg: err, suc: false });
+
+        }
+        finally {
+
+          client.close();
+          console.log('Client closed DF 1');
+
+        }
+      }
+      else {
+
+        res.json({ msg: "Authentication failed, Invalid token", suc: false });
+
+      }
+
+    })
+
+  }
+  catch (err) {
+
+    console.log(err);
+    res.json({ msg: err, suc: false });
+
+  }
+
+}
+
+const cloneFile = async (req, res) => {
+
+  try {
+
+    jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+      if (!error) {
+
+        try {
+
+          const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
+
+          const getFile = await database.findOne({ filename: req.body.filename });
+
+          getFile.filename = `${req.body.filename}_#${Math.random() * 1000}`;
+
+          console.log(getFile.filename);
+
+          const serverResponse = await fetch('http://localhost:3500/user/createfile', {
+            method: "POST",
+            headers: {
+              'Content-Type': "application/json",
+            },
+            body: JSON.stringify({
+              token: req.body.token,
+              file: getFile
+            })
+          })
+
+          const serverData = await serverResponse.json();
+
+          if (serverData.suc) {
+
+            res.json({ msg: `Cloned ${req.body.filename} successfully!`, suc: true });
+
+          }
+          else {
+
+            res.json({ msg: "Error cloning the file", suc: false });
+
+          }
+        }
+        catch (err) {
+
+          console.log(err);
+          res.json({ msg: "Server error : clonning the file", suc: false });
+
+        }
+        finally {
+
+          client.close();
+          console.log("Client closed CL 1");
+
+        }
+
+      }
+      else {
+
+        res.json({ msg: "Authentication failed, In valid token", suc: false });
+
+      }
+
+    })
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+    res.json({ msg: "Server error : cloning the file", suc: false });
+  }
+
+
+}
+
+const renameFile = async (req, res) => {
+
+  try {
+
+    jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+      if (!error) {
+
+        try {
+
+          const database = await makeConnection({ db: 'Docs', collections: decoded.id }).catch(console.dir);
+
+          const fileData = await database.updateOne({ filename: req.body.filename }, { $set: { filename: req.body.newFilename } });
+
+          fileData ? res.json({ msg: "Renamed file successfully", suc: true }) : res.json({ msg: "Unable to rename file", suc: false });
+
+        }
+        catch (err) {
+
+          console.log(err);
+          res.json({ msg: "Server side error", suc: false });
+
+        }
+        finally {
+
+          client.close();
+          console.log('Client closed RF 1');
+
+        }
+
+      }
+      else {
+
+        res.json({ msg: "Authentication error. Invalid token", suc: false });
+
+      }
+
+    })
+
+  }
+  catch (err) {
+
+    console.log(err);
+    res.json({ msg: "Intial endpoint error", suc: false });
+
+  }
+
+}
+
+const loadFile = async (req, res) => {
+
+  try {
+
+    await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+      console.log(decoded.id);
+      if (!error) {
+
+        const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
+
+        const document = await database.findOne({ fileId: req.body.fileId });
+
+        console.log(document);
+
+        document ? res.json({ msg: "Fetched file data", suc: true, data: document }) : res.json({ msg: "Failed to fetch data", suc: false });
+
+        // client.close();
+        console.log('client closed "Load file"');
+
+      }
+      else {
+
+        res.json({ msg: "Invalid token", suc: false });
+        // client.close()
+        console.log('client closed "Load file"');
+
+      }
+
+    })
+
+  }
+  catch (err) {
+
+    console.error('Load File Error ', err);
+
+  }
+  finally {
+    client.close();
+  }
+
+
+}
+
+const saveFile = (req, res) => {
+
+  jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+
+    if (!error) {
+
+      const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
+
+      const document = await database.updateOne({ fileId: req.body.fileId }, { $set: { filecontent: filecontent } })
+
+      document ? res.json({ msg: "File saved", suc: true }) : res.json({ msg: "Error in saving file", suc: false });
+
+    }
+    else {
+
+      res.json({ msg: "Invalid token", suc: false });
+    
+    }
+
+  })
+
+}
+
+export { fetchUser, setUser, createFile, userInfo, loadHome, jwtBreakdown, deleteFile, cloneFile, renameFile, loadFile , saveFile};

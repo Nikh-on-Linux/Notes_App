@@ -23,7 +23,6 @@ app.use('/mailer',mailRouter);
 app.use('/user',userRouter)
 
 app.get('/',(req,res)=>{
-  console.log('pakapak');
   res.json({msg:"Connected successfully",suc:true})
 })
 

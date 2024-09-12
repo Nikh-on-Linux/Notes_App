@@ -24,6 +24,7 @@ function InputC({ startContent, endContent, placeholder, type, clearable , value
 
   const clear = () => {
     setValue("");
+    valueFetcher("");
     setVisi("hidden");
   }
   // visibleRef.current.style.display = "none"

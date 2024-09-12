@@ -8,6 +8,7 @@ import { Toaster, toast } from "sonner";
 
 export default function Layout({ children }) {
   const alertRef = useRef('');
+  const buttonRef = useRef('');
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,7 +36,7 @@ export default function Layout({ children }) {
     if (value) {
 
       toast.promise(async () => {
-
+        buttonRef.current.disabled = true;
         const response = await fetch('http://localhost:3500/user/createfile', {
           method: "POST",
           headers: {
@@ -47,6 +48,7 @@ export default function Layout({ children }) {
               filename: value,
               type: "file",
               isTeam: false,
+              fileId : Math.floor(Math.random()*150)*Date.now(),
             }
           })
         })
@@ -67,8 +69,8 @@ export default function Layout({ children }) {
 
       }, {
         loading: "Creating your file...",
-        success: (data) => { return (data) },
-        error: (data) => { return (data) }
+        success: (data) => { buttonRef.current.disabled = false ; setValue('') ; return (data) },
+        error: (data) => { buttonRef.current.disabled = false ; setValue('') ; return (data) }
       })
 
     }
@@ -94,7 +96,7 @@ export default function Layout({ children }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={openBox} >Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={createFile} >Create</AlertDialogAction>
+            <AlertDialogAction ref={buttonRef} onClick={createFile} >Create</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -41,9 +41,9 @@ function ContentPanel({ heading, content }) {
       </Button>
       <div ref={container} onScroll={validity} className='flex scroll-smooth w-full flex-row overflow-hidden items-center py-5' >
         {
-          content.map((item) => {
+          !content? <h1 className='text-secondary2-foreground font-medium' >No team work yet :( </h1> :content.map((item) => {
             return (
-              <CardDom key={item.id} cardname={item.filename} isTeam={item.isTeam} createdby={item.createdby} />
+              <CardDom key={item.id} cardname={item.filename} isTeam={item.isTeam} createdby={item.createdby} fileId={item.fileId} />
             )
           })
         }

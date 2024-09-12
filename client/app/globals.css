@@ -50,8 +50,8 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
-    --secondary2 : 216, 88.2%, 6.7%;
-    --secondary-foreground2 : 1, 0%, 50% ;
+    --secondary2: 216, 88.2%, 6.7%;
+    --secondary-foreground2: 1, 0%, 50%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
     --chart-1: 220 70% 50%;
@@ -62,11 +62,17 @@
   }
 }
 
+.ql-container.ql-snow {
+  border:none
+}
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
 }
