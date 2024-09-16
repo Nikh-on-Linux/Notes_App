@@ -5,12 +5,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import InputC from '@/components/ui/inputCustom';
 import { FileIcon } from 'lucide-react';
 import { Toaster, toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Layout({ children }) {
   const alertRef = useRef('');
   const buttonRef = useRef('');
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     window.addEventListener("createFile", openBox);
@@ -48,7 +50,8 @@ export default function Layout({ children }) {
               filename: value,
               type: "file",
               isTeam: false,
-              fileId : Math.floor(Math.random()*150)*Date.now(),
+              fileId: Math.floor(Math.random() * 150) * Date.now(),
+              filecontent: ''
             }
           })
         })
@@ -56,8 +59,8 @@ export default function Layout({ children }) {
         const data = await response.json();
 
         if (data.suc) {
-
           setIsOpen(false);
+          router.push(`/user/editor/${data.fileId}`);
           return data.msg
 
         }
@@ -69,8 +72,8 @@ export default function Layout({ children }) {
 
       }, {
         loading: "Creating your file...",
-        success: (data) => { buttonRef.current.disabled = false ; setValue('') ; return (data) },
-        error: (data) => { buttonRef.current.disabled = false ; setValue('') ; return (data) }
+        success: (data) => { buttonRef.current.disabled = false; setValue(''); return (data) },
+        error: (data) => { buttonRef.current.disabled = false; setValue(''); return (data) }
       })
 
     }
@@ -84,7 +87,7 @@ export default function Layout({ children }) {
 
   return (
     <main className="flex flex-row w-screen h-screen" >
-      <Toaster richColors theme="dark" position="bottom-right" />
+      <Toaster richColors theme="dark" position="top-right" />
       <AlertDialog open={isOpen}>
         <AlertDialogTrigger ref={alertRef} asChild></AlertDialogTrigger>
         <AlertDialogContent>

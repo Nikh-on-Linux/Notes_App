@@ -1,7 +1,6 @@
 import { makeConnection, client } from "./connector.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { ObjectId } from "mongodb";
 
 dotenv.config();
 
@@ -82,7 +81,7 @@ const createFile = (req, res) => {
         if (!exf) {
 
           const file = await database.insertOne(req.body.file);
-          res.json({ msg: `Created ${req.body.file.filename}`, suc: true });
+          res.json({ msg: `Created ${req.body.file.filename}`, fileId: req.body.file.fileId, suc: true });
 
         }
         else {
@@ -95,7 +94,7 @@ const createFile = (req, res) => {
       }
       catch (err) {
 
-        res.json({ msg: "Error in crearing file", suc: false });
+        res.json({ msg: `Error in crearing file ${err}`, suc: false });
 
       }
 
@@ -128,21 +127,10 @@ const loadHome = async (req, res) => {
 
         const files = await database.find({ type: 'file' }).toArray();
 
-        const response = await fetch('http://localhost:3500/user/userinfo', {
-          method: "POST",
-          headers: {
-            'Content-Type': "application/json",
-          },
-          body: JSON.stringify({
-            token: token
-          })
-        })
 
-        const serverResponse = await response.json();
+        if (files) {
 
-        if (serverResponse.suc) {
-
-          res.json({ msg: "Found user data", docs: files, suc: true, user: serverResponse });
+          res.json({ msg: "Found user data", docs: files, suc: true });
 
         }
         else {
@@ -180,8 +168,6 @@ const userInfo = async (req, res) => {
 
   try {
 
-    console.log(req.body.token);
-
     await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
 
       if (!error) {
@@ -191,14 +177,14 @@ const userInfo = async (req, res) => {
         const results = await database.findOne({ email: decoded.email }, { projection: { password: 0 } });
 
         res.json({ msg: "Success fetching info", data: results, suc: true });
-
+        // client.close();
       }
 
       else {
 
         res.json({ msg: "Invalid token 'userInfo'", suc: false });
         console.log(error);
-
+        // client.close();
       }
 
 
@@ -210,12 +196,11 @@ const userInfo = async (req, res) => {
 
     console.log(err);
     res.json({ msg: err, suc: false })
-
+    // client.close();
   }
   finally {
 
     console.log('Client closed user 8');
-    client.close();
 
   }
 
@@ -305,11 +290,11 @@ const cloneFile = async (req, res) => {
 
           const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
 
-          const getFile = await database.findOne({ filename: req.body.filename });
+          const getFile = await database.findOne({ filename: req.body.filename }, { projection: { _id: 0 } });
 
           getFile.filename = `${req.body.filename}_#${Math.random() * 1000}`;
 
-          console.log(getFile.filename);
+          getFile.fileId = req.body.fileId;
 
           const serverResponse = await fetch('http://localhost:3500/user/createfile', {
             method: "POST",
@@ -326,12 +311,12 @@ const cloneFile = async (req, res) => {
 
           if (serverData.suc) {
 
-            res.json({ msg: `Cloned ${req.body.filename} successfully!`, suc: true });
+            res.json({ msg: `Cloned ${req.body.filename} successfully!`, fileId: req.body.fileId, suc: true });
 
           }
           else {
 
-            res.json({ msg: "Error cloning the file", suc: false });
+            res.json({ msg: `Error cloning the file, ${serverData.msg}`, suc: false });
 
           }
         }
@@ -460,15 +445,17 @@ const loadFile = async (req, res) => {
 
 }
 
-const saveFile = (req, res) => {
+const saveFile = async (req, res) => {
 
-  jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
+  await jwt.verify(req.body.token, process.env.SECRETE_KEY, async (error, decoded) => {
 
     if (!error) {
 
       const database = await makeConnection({ db: "Docs", collections: decoded.id }).catch(console.dir);
 
-      const document = await database.updateOne({ fileId: req.body.fileId }, { $set: { filecontent: filecontent } })
+      const document = await database.updateOne({ fileId: req.body.fileId }, { $set: { filecontent: req.body.filecontent } })
+
+      console.log(document);
 
       document ? res.json({ msg: "File saved", suc: true }) : res.json({ msg: "Error in saving file", suc: false });
 
@@ -476,11 +463,11 @@ const saveFile = (req, res) => {
     else {
 
       res.json({ msg: "Invalid token", suc: false });
-    
+
     }
 
   })
 
 }
 
-export { fetchUser, setUser, createFile, userInfo, loadHome, jwtBreakdown, deleteFile, cloneFile, renameFile, loadFile , saveFile};
+export { fetchUser, setUser, createFile, userInfo, loadHome, jwtBreakdown, deleteFile, cloneFile, renameFile, loadFile, saveFile };

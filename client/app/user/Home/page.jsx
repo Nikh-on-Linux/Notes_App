@@ -92,7 +92,6 @@ function HomePage() {
 
   return (
     <>
-      <Toaster richColors position='bottom-right' theme='dark' />
       <div className={`w-full h-full ${state} absolute top-0 left-0 bg-transparent backdrop-blur-2xl z-50 flex flex-row items-center space-x-2 justify-center `} >
         <LoaderCircle size={20} className=' animate-spin text-secondary2-foreground' />
         <p className='text-secondary2-foreground font-medium text-xl' >Loading data</p>

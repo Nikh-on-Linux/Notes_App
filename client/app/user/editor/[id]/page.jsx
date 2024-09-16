@@ -1,6 +1,6 @@
 "use client"
-import React, { useState, useEffect } from 'react'
-import { toast , Toaster } from 'sonner';
+import React, { useState, useEffect, useRef } from 'react'
+import { toast, Toaster } from 'sonner';
 import { ChevronLeft, ArrowLeftIcon } from 'lucide-react'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -10,36 +10,44 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 function EditorPage({ params }) {
   const [docValue, setDocValue] = useState('');
   const [docName, setDocName] = useState('');
+  const [oldData, setOldData] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const unRef = useRef(null);
   const router = useRouter();
 
-  const saveFile = async () => {
-    alert(docValue)
-    const serverResponse = await fetch('http://localhost:3500/user/saveFile', {
+  const saveFile2 = async () => {
+    buttonRef.current.disabled = true;
+    const response = await fetch("http://localhost:3500/user/savefile", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': "application/json"
       },
       body: JSON.stringify({
-        token: localStorage.getItem('token'),
+        token: localStorage.getItem("token"),
         fileId: Number(params.id),
-        filecontent: String(docValue),
+        filecontent: docValue
       })
-    });
+    })
 
-    const serverData = await serverResponse.json();
+    const data = await response.json();
 
-    if (serverData.suc) {
-
-      return serverData.msg;
+    if (data.suc) {
+      buttonRef.current.disabled = true;
+      unRef.current.style.display = "none"
+      return data.msg
 
     }
     else {
-
-      throw serverData.msg;
+      buttonRef.current.disabled = true;
+      throw data.msg
 
     }
+  }
 
+  const changeContent = (value) => {
+    setDocValue(value);
+    oldData !== docValue ? unRef.current.style.display = "block" : unRef.current.style.display = "none"
   }
 
   useEffect(() => {
@@ -62,6 +70,8 @@ function EditorPage({ params }) {
       if (serverData.suc) {
 
         setDocName(serverData.data.filename);
+        setDocValue(serverData.data.filecontent);
+        setOldData(serverData.data.filecontent);
         return serverData.msg;
 
       }
@@ -80,9 +90,23 @@ function EditorPage({ params }) {
     // })
 
   }, [])
+  const modules = {
+    // syntax:true,
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code-block"],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
+      ["link", "image", "video"], // Add video
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ["clean"],
+    ],
+  };
   return (
     <>
-      <Toaster richColors theme='dark' position='bottom-right' />
       <AlertDialog open={isOpen}>
         <AlertDialogTrigger asChild></AlertDialogTrigger>
         <AlertDialogContent>
@@ -93,11 +117,11 @@ function EditorPage({ params }) {
               </div>
               <div className='flex flex-row items-center space-x-3' >
                 <AlertDialogCancel onClick={() => { setIsOpen(false) }} >Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => {
-                  toast.promise(saveFile, {
+                <AlertDialogAction ref={buttonRef} onClick={() => {
+                  toast.promise(saveFile2, {
                     loading: "Saving file please wait...",
-                    success: (data) => { return data },
-                    error: (data) => { return data }
+                    success: (data) => { setIsOpen(false); return data },
+                    error: (data) => { setIsOpen(false); return data }
                   })
                 }} >Save</AlertDialogAction>
               </div>
@@ -106,15 +130,15 @@ function EditorPage({ params }) {
           </AlertDialogHeader>
         </AlertDialogContent>
       </AlertDialog>
-      <div className='w-full h-full flex flex-col space-y-5 px-2 py-2' >
+      <div className='w-full h-full flex flex-col space-y-3 px-2 py-1' >
         <div className='w-full flex flex-row items-center space-x-3 px-5 py-3 border-[0.1rem] bg-gradient-to-r from-secondary2 to-background ' >
-          <ArrowLeftIcon onClick={() => { router.back() }} size={24} className='cursor-pointer' />
+          <ArrowLeftIcon onClick={() => { router.back() }} size={24} className='cursor-pointer transition-all hover:text-secondary' />
           <p className='font-medium text-2xl' >{docName}</p>
-          <div onClick={() => { setIsOpen(true) }} className='bg-gradient-to-l hover:scale-105 transition-all cursor-pointer border-[0.1rem] from-secondary to-secondary2 w-fit p-1 px-3 rounded-full' >
+          <div ref={unRef} onClick={() => { setIsOpen(true) }} className='shadow-sm shadow-secondary bg-gradient-to-l hidden hover:scale-105 transition-all cursor-pointer border-[0.1rem] from-secondary to-secondary2 w-fit p-1 px-3 rounded-full' >
             <h1 className='text-xs select-none' >Unsaved changes</h1>
           </div>
         </div>
-        <ReactQuill theme="snow" value={docValue} className='w-full border-[0.1rem] px-5 py-2 flex-1 overflow-y-scroll overflow-x-visible' onChange={setDocValue} />
+        <ReactQuill modules={modules} theme="snow" value={docValue} className='w-full border-[0.1rem] px-5 h-fit py-2 overflow-y-scroll overflow-x-hidden' onChange={changeContent} />
       </div>
     </>
   )

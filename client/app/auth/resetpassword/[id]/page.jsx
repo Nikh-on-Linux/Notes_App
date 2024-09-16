@@ -92,7 +92,7 @@ function RegisterPafe({ params }) {
 
   return (
     <main className='w-screen h-screen flex-row flex items-center justify-center' >
-      <Toaster richColors theme='dark' position='bottom-right' ></Toaster>
+      <Toaster richColors theme='dark' position='top' ></Toaster>
       <Card>
         <CardHeader>
           <CardTitle>Reset your password</CardTitle>

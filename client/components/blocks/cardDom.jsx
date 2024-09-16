@@ -37,8 +37,6 @@ function CardDom({ cardname, createdby, isTeam , fileId }) {
 
   const deleteFile = () => {
 
-    toast.info("The file cannot be restored again!");
-
     toast.promise(async () => {
 
       const response = await fetch('http://localhost:3500/user/deletefile', {
@@ -67,7 +65,7 @@ function CardDom({ cardname, createdby, isTeam , fileId }) {
 
     }, {
       loading: `Deleting ${cardname} ...`,
-      success: (data) => { setIsOpen(false); toast.info('Make sure to refresh the page to see the changes'); return data; },
+      success: (data) => { setIsOpen(false); document.getElementById(fileId).remove() ;return data; },
       error: (data) => { setIsOpen(false); return data; },
     })
 
@@ -85,14 +83,15 @@ function CardDom({ cardname, createdby, isTeam , fileId }) {
         },
         body: JSON.stringify({
           token: localStorage.getItem('token'),
-          filename: cardname
+          filename: cardnameState,
+          fileId : Math.floor(Math.random() * 150) * Date.now(),
         })
       })
 
       const data = await response.json();
 
       if (data.suc) {
-
+        router.push(`/user/editor/${data.fileId}`)
         return data.msg
 
       }
@@ -202,7 +201,7 @@ function CardDom({ cardname, createdby, isTeam , fileId }) {
           </DialogContent>
         </Dialog>
 
-        <Card onDoubleClick={()=>{router.push(`/user/editor/${fileId}`)}} className="group overflow-hidden max-w-[16rem] bg-popover cursor-pointer hover:scale-100 transition-all min-h-[14rem] flex-col flex justify-between min-w-[16rem] max-h-[14rem] mr-6" >
+        <Card id={fileId} onDoubleClick={()=>{router.push(`/user/editor/${fileId}`)}} className="group overflow-hidden max-w-[16rem] bg-popover cursor-pointer hover:scale-100 transition-all min-h-[14rem] flex-col flex justify-between min-w-[16rem] max-h-[14rem] mr-6" >
           <AlertDialog open={isOpen}>
             <AlertDialogTrigger ref={alertRef} asChild></AlertDialogTrigger>
             <AlertDialogContent>
@@ -267,7 +266,7 @@ function CardDom({ cardname, createdby, isTeam , fileId }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <CardDescription>Card Description</CardDescription>
+            <CardDescription>Created by you</CardDescription>
           </CardHeader>
           <CardFooter className="bg-gradient-to-r from:transparent to-primary translate-y-12 group-hover:translate-y-0 transition-all shadow-[0_-1px_100px_50px] shadow-secondary dark:from-transparent dark:to-secondary py-4">
             <p className='font-medium text-sm' >Last edited : 15m</p>

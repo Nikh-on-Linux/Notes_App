@@ -59,7 +59,7 @@ function ForgotPassword() {
 
   return (
     <main className='w-screen h-screen flex flex-row items-center justify-center' >
-      <Toaster richColors theme='dark' position='bottom-right' ></Toaster>
+      <Toaster richColors theme='dark' position='top' ></Toaster>
       <Card className='w-[20%] bg-secondary2' >
         <CardHeader>
           <CardTitle>Reset your password.. </CardTitle>

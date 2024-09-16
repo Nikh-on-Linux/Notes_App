@@ -86,7 +86,7 @@ function LoginPage() {
 
   return (
     <main className='w-screen flex flex-row items-center justify-center h-screen' >
-      <Toaster richColors position='bottom-right' theme='dark' />
+      <Toaster richColors position='top' theme='dark' />
       <div className='w-[25%] rounded-2xl h-fit bg-secondary2 border-2 relative overflow-hidden' >
         <div className='absolute bg-gradient-to-r from-primary to-transparent text-secondary-foreground px-20  py-1 font-medium text-center top-6 -left-16 -rotate-45' >Login</div>
         <div className='flex mx-auto w-[100%] my-1 flex-col justify-center' >

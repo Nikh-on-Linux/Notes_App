@@ -22,7 +22,7 @@ const genMail = async (req, res) => {
       to: `${req.body.email}`, // list of receivers
       subject: "Notess_App: Reset your password", // Subject line
       text: "", // plain text body
-      html: `<h1>You can reset your account password from the link given below</h1><a href="http://localhost:3000/route/auth/resetpassword/${req.body.id}" >Click here to reset password</a>`, // html body
+      html: `<h1>You can reset your account password from the link given below</h1><a href="http://localhost:3000/auth/resetpassword/${req.body.id}" >Click here to reset password</a>`, // html body
     }).then(data => console.log(data));
 
     res.json({msg:"Email is sent successfully",suc:true});
