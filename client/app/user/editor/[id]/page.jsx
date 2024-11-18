@@ -19,7 +19,7 @@ function EditorPage({ params }) {
 
   const saveFile2 = async () => {
     buttonRef.current.disabled = true;
-    const response = await fetch("http://localhost:3500/user/savefile", {
+    const response = await fetch("https://notes-app-1-kyvm.onrender.com/user/savefile", {
       method: "POST",
       headers: {
         'Content-Type': "application/json"
@@ -55,7 +55,7 @@ function EditorPage({ params }) {
 
     const loadFileData = async () => {
 
-      const response = await fetch(`http://localhost:3500/user/loadfile`, {
+      const response = await fetch(`https://notes-app-1-kyvm.onrender.com/user/loadfile`, {
         method: "POST",
         headers: {
           'Content-Type': "application/json",

@@ -39,7 +39,7 @@ export default function Layout({ children }) {
 
       toast.promise(async () => {
         buttonRef.current.disabled = true;
-        const response = await fetch('http://localhost:3500/user/createfile', {
+        const response = await fetch('https://notes-app-1-kyvm.onrender.com/user/createfile', {
           method: "POST",
           headers: {
             'Content-Type': "application/json",

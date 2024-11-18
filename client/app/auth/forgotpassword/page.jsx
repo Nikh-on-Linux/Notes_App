@@ -25,7 +25,7 @@ function ForgotPassword() {
 
       const sendMail = async () => {
 
-        const response = await fetch('http://localhost:3500/auth/forgotpassword', {
+        const response = await fetch('https://notes-app-1-kyvm.onrender.com/auth/forgotpassword', {
           method: "POST",
           headers: {
             'Content-Type': "application/json",

@@ -23,7 +23,7 @@ function HomePage() {
       
       if (localStorage.getItem('token') !== "") {
 
-        const response = await fetch("http://localhost:3500/user/loadHome", {
+        const response = await fetch("https://notes-app-1-kyvm.onrender.com/user/loadHome", {
           'method': "POST",
           "headers": {
             'Content-Type': "application/json",

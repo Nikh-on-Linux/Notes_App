@@ -11,7 +11,7 @@ import userRouter from "./routes/user.js";
 dotenv.config();
 const app = express();
 
-const corsOptions = {origin:"http://localhost:3000"};
+const corsOptions = {origin:"https://notes-app-nikhilhegde-q05ow7i9i-nikh-on-linuxs-projects.vercel.app"};
 
 app.use(cors(corsOptions));
 app.use(bodyparser.json({extended:false,limit:"50mb"}));
