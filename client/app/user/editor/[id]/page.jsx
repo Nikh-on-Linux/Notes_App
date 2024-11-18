@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog";
+import { Trash2Icon } from 'lucide-react';
 
 function EditorPage({ params }) {
   const [docValue, setDocValue] = useState('');
@@ -131,11 +132,16 @@ function EditorPage({ params }) {
         </AlertDialogContent>
       </AlertDialog>
       <div className='w-full h-full flex flex-col space-y-3 px-2 py-1' >
-        <div className='w-full flex flex-row items-center space-x-3 px-5 py-3 border-[0.1rem] bg-gradient-to-r from-secondary2 to-background ' >
-          <ArrowLeftIcon onClick={() => { router.back() }} size={24} className='cursor-pointer transition-all hover:text-secondary' />
-          <p className='font-medium text-2xl' >{docName}</p>
-          <div ref={unRef} onClick={() => { setIsOpen(true) }} className='shadow-sm shadow-secondary bg-gradient-to-l hidden hover:scale-105 transition-all cursor-pointer border-[0.1rem] from-secondary to-secondary2 w-fit p-1 px-3 rounded-full' >
-            <h1 className='text-xs select-none' >Unsaved changes</h1>
+        <div className='w-full flex flex-row items-center justify-between space-x-3 px-5 py-3 border-[0.1rem] bg-gradient-to-r from-secondary2 to-background ' >
+          <div className='flex flex-row justify-center items-center space-x-4' >
+            <ArrowLeftIcon onClick={() => { router.back() }} size={24} className='cursor-pointer transition-all hover:text-secondary' />
+            <p className='font-medium text-2xl' >{docName}</p>
+            <div ref={unRef} onClick={() => { setIsOpen(true) }} className='shadow-sm shadow-secondary bg-gradient-to-l hidden hover:scale-105 transition-all cursor-pointer border-[0.1rem] from-secondary to-secondary2 w-fit p-1 px-3 rounded-full' >
+              <h1 className='text-xs select-none' >Unsaved changes</h1>
+            </div>
+          </div>
+          <div>
+            <Trash2Icon size={20} className='text-secondary2-foreground cursor-pointer hover:text-destructive transition-all' />
           </div>
         </div>
         <ReactQuill modules={modules} theme="snow" value={docValue} className='w-full border-[0.1rem] px-5 h-fit py-2 overflow-y-scroll overflow-x-hidden' onChange={changeContent} />

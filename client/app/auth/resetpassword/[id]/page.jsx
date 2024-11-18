@@ -96,7 +96,7 @@ function RegisterPafe({ params }) {
       <Card>
         <CardHeader>
           <CardTitle>Reset your password</CardTitle>
-          <CardDescription>Don't share this link with others.</CardDescription>
+          <CardDescription>Don&apos;t share this link with others.</CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col space-y-3' >
           <InputC type={pastype} placeholder={"Set password"} valueFetcher={(value) => { setPassword(value) }} startContent={<KeyRoundIcon size={20} className='text-secondary2-foreground' />} endContent={

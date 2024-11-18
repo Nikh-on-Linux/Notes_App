@@ -100,7 +100,7 @@ function LoginPage() {
             <Link href={"/auth/forgotpassword"} className='font-medium group text-secondary2-foreground before:content-[""] before:w-[0%] before:absolute before:border-b-2 before:border-secondary2-foreground before:hover:w-[100%] before:transition-all before:bottom-0 relative transition-all' >Forgot password?</Link>
             <button ref={buttonRef} type='submit' className="px-5 disabled:bg-background disabled:text-secondary rounded-md hover:bg-primary hover:text-background transition-all py-2 text-lg font-medium text-secondary-foreground bg-secondary" >Login</button>
           </form>
-          <Link onClick={fireEvent} href={'/auth/signup'} className='my-20 overflow-hidden w-fit mx-auto font-medium group text-secondary2-foreground before:content-[""] before:w-[0%] before:absolute before:border-b-2 before:border-secondary2-foreground before:hover:w-[100%] before:transition-all before:bottom-0 relative transition-all' >Don't have an account?</Link>
+          <Link onClick={fireEvent} href={'/auth/signup'} className='my-20 overflow-hidden w-fit mx-auto font-medium group text-secondary2-foreground before:content-[""] before:w-[0%] before:absolute before:border-b-2 before:border-secondary2-foreground before:hover:w-[100%] before:transition-all before:bottom-0 relative transition-all' >Don&apos;t have an account?</Link>
         </div>
       </div>
     </main>
