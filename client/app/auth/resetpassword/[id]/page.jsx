@@ -55,7 +55,7 @@ function RegisterPafe({ params }) {
         buttonRef.current.disabled = true;
 
         const resetPassword = async () => {
-          const response = await fetch('https://notes-app-1-kyvm.onrender.com/auth/resetpassword', {
+          const response = await fetch('http://localhost:3500/auth/resetpassword', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

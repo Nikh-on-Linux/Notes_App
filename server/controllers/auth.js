@@ -43,7 +43,6 @@ const createUser = async (req, res) => {
           },
           body: JSON.stringify({
             "userId": obj,
-            lauda:"tera lauda"
           }),
           // body:{
           //   userid:obj
@@ -103,7 +102,6 @@ const loginUser = async (req, res) => {
     const database = await makeConnection({ collections: "Credentials", db: "Users" }).catch(console.dir);
 
     const userid = await database.findOne({ email: data.email });
-
     await bcrypt.compare(req.body.password, userid.password)
 
       .then((match) => {
